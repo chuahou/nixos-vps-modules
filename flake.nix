@@ -13,11 +13,24 @@
       "${lib.removeSuffix ".nix" "${builtins.baseNameOf file}"}" = import file;
     }) modules;
 
-  in rec {
+  in {
     nixosModules = builtins.foldl' (x: y: x // y) {} imported;
-    allModules = builtins.attrValues nixosModules;
+    allModules = builtins.attrValues self.nixosModules;
 
     deployScript = pkgs.writeShellScriptBin "deploy.sh"
       (builtins.readFile ./deploy.sh);
+
+    # Initial DigitalOcean image, with thanks to
+    # https://git.sr.ht/~rj/digitalocean-image.
+    doImage = (pkgs.nixos (self.nixosModules.vps-common {
+      inherit pkgs;
+      inherit (pkgs) lib;
+      config.vps-common = true;
+    } // {
+      imports = [
+        "${nixpkgs}/nixos/modules/virtualisation/digital-ocean-image.nix"
+      ];
+      config.virtualisation.digitalOceanImage.compressionMethod = "bzip2";
+    })).digitalOceanImage;
   };
 }
