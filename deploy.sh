@@ -6,6 +6,6 @@
 
 set -euo pipefail
 
-nixos-rebuild build --flake $(dirname $0)#$1
+nixos-rebuild build --flake .#$1
 nix-copy-closure --to -v root@$2 $(realpath result)
 ssh root@$2 $(realpath result)/bin/switch-to-configuration ${3:-switch}
