@@ -4,7 +4,7 @@
 # Common VPS options for creating images and after. Thanks to
 # https://git.sr.ht/~rj/digitalocean-image.
 
-{ config, lib, pkgs, modulesPath, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   options.vps-common = lib.mkOption {
